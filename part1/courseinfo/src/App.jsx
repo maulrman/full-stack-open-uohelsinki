@@ -14,18 +14,22 @@ const Total = (props) => {
   )
 }
 
-const Content = (props) => {
+const Part = (props) => {
   return (
     <div>
       <p>
-        {props.p1} {props.ex1}
+        {props.name} {props.exercises}
       </p>
-      <p>
-        {props.p2} {props.ex2}
-      </p>
-      <p>
-        {props.p3} {props.ex3}
-      </p>
+    </div>
+  )
+}
+
+const Content = (props) => {
+  return (
+    <div>
+      <Part name={props.p1} exercises={props.ex1} />
+      <Part name={props.p2} exercises={props.ex2} />
+      <Part name={props.p3} exercises={props.ex3} />
     </div>
   )
 }
