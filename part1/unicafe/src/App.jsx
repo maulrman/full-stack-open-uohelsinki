@@ -16,20 +16,38 @@ const Statistics = ({good, neutral, bad}) => {
   return (
     <div>
       <h1>statistics</h1>
-      <StatisticsLine text="good" value={good} />
-      <StatisticsLine text="neutral" value={neutral} />
-      <StatisticsLine text="bad" value={bad} />
-      <StatisticsLine text="all" value={all_votes} />
-      <StatisticsLine text="average" value={average} />
-      <StatisticsLine text="positve" value={positive_votes_pct} />
+      <table>
+        <tbody>
+          <StatisticsLine text="good" value={good} />
+          <StatisticsLine text="neutral" value={neutral} />
+          <StatisticsLine text="bad" value={bad} />
+          <StatisticsLine text="all" value={all_votes} />
+          <StatisticsLine text="average" value={average} />
+          <StatisticsLine text="positive" value={positive_votes_pct} />
+        </tbody>
+      </table>
     </div>
   )
 }
 
 const StatisticsLine = (props) => {
+  if (props.text == "positive") {
+    return (
+      <>
+      <tr>
+        <td>{props.text}</td>
+        <td>{props.value} %</td>
+      </tr>
+    </>
+    )
+  }
+
   return (
     <>
-      <p>{props.text} {props.value}</p>
+      <tr>
+        <td>{props.text}</td>
+        <td>{props.value}</td>
+      </tr>
     </>
   )
 }
