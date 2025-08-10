@@ -1,5 +1,14 @@
 import { useState } from 'react'
 
+const DisplayAnecdote = ({anecdote, votes}) => {
+  return (
+    <div>
+      <p>{anecdote}</p>
+      <p>has {votes} votes</p>
+    </div>
+  )
+}
+
 const App = (props) => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -13,6 +22,7 @@ const App = (props) => {
   ]
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
   const [selected, setSelected] = useState(0)
+  const [high_index, setHighIndex] = useState(0)
 
   function next_anecdotes(){
     let next_index = selected + 1
@@ -26,14 +36,23 @@ const App = (props) => {
     let votes_copy = [...votes]
     votes_copy[selected] = votes[selected] + 1
     setVotes(votes_copy)
+    find_highest_voted(votes_copy)
+  }
+
+  function find_highest_voted(votes){
+    let high_vote_count = Math.max(...votes)
+    let high_index = votes.findIndex((el) => el === high_vote_count)
+    setHighIndex(high_index)
   }
 
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
-      <p>has {votes[selected]} votes</p>
+      <h1>Anecdote of the day</h1>
+      <DisplayAnecdote anecdote={anecdotes[selected]} votes={votes[selected]} />
       <button onClick={vote_anecdote}>vote</button>
       <button onClick={next_anecdotes}>next</button>
+      <h1>Anecdote with most votes</h1>
+      <DisplayAnecdote anecdote={anecdotes[high_index]} votes={votes[high_index]} />
     </div>
   )
 }
