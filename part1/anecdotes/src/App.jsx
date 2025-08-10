@@ -22,10 +22,17 @@ const App = (props) => {
     setSelected(next_index)
   }
 
+  function vote_anecdote(){
+    let votes_copy = [...votes]
+    votes_copy[selected] = votes[selected] + 1
+    setVotes(votes_copy)
+  }
+
   return (
     <div>
       <p>{anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
+      <button onClick={vote_anecdote}>vote</button>
       <button onClick={next_anecdotes}>next</button>
     </div>
   )
