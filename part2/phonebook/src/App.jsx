@@ -43,16 +43,38 @@ const Persons = ({ persons, onDelete }) => {
   )
 }
 
+const NotifyAlert = ({ message }) => {
+  if (message == null){
+    return null
+  } else {
+    return (
+      <div className={message.type}>
+        <p>{message.value}</p>
+      </div>
+    )
+  }
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
   const [filterPersons, setFilterPersons] = useState([])
+  const [notification, setNotification] = useState({})
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const updateContact = (person) => {
     phoneService
       .update(person.id, person)
+      .then(()=> true)
+      .catch(e => {
+        setNotification({ type: "error", value: `Information of ${person.name} has already been removed from server`})
+        setTimeout(()=>{
+          setNotification(null)
+        }, 5000)
+        return false
+      })
   }
 
   const addContact = (event) => {
@@ -63,10 +85,14 @@ const App = () => {
       if (confirm){
         let updatePersonObject = {...persons[personExist]}
         updatePersonObject.number = newNumber
-        updateContact(updatePersonObject)
-        let updatedPersons = [...persons]
-        updatedPersons[personExist] = updatePersonObject
-        setPersons(updatedPersons)
+        let succeed = updateContact(updatePersonObject)
+        if (succeed){
+          let updatedPersons = [...persons]
+          updatedPersons[personExist] = updatePersonObject
+          setPersons(updatedPersons)
+        } else {
+          setRefreshKey(refreshKey + 1)
+        }
       }
       setNewName('')
       setNewNumber('')
@@ -83,6 +109,12 @@ const App = () => {
       .then(resp => {
         setPersons(persons.concat(resp.data))
       })
+
+    setNotification({
+      type: "success",
+      value: `Added ${newPersonObj.name}`
+    })
+    setTimeout(() => setNotification(null), 5000)
 
     setNewName('')
     setNewNumber('')
@@ -127,12 +159,13 @@ const App = () => {
       .then(resp => {
         setPersons(resp.data)
       })
-  },[])
+  },[refreshKey])
 
   if (filterName !== ''){
     return (
       <div>
       <h2>Phonebook</h2>
+      <NotifyAlert message={notification} />
       <Filter value={filterName} onChange={handleFilterChange}/>
       <h2>add a new</h2>
       <PersonForm
@@ -151,6 +184,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <NotifyAlert message={notification} />
       <Filter value={filterName} onChange={handleFilterChange}/>
       <h2>add a new</h2>
       <PersonForm
