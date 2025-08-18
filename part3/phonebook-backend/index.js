@@ -1,7 +1,11 @@
 const express = require('express')
+const morgan = require('morgan')
 
 const app = express()
 const PORT = 3001
+
+app.use(express.json())
+app.use(morgan('combined'))
 
 let phonebook_data = [
     { 
@@ -46,6 +50,12 @@ app.get('/api/persons/:id', (req, res) => {
     } else {
         res.status(404).json({'message': "404"})
     }
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+    const person_id = req.params.id
+    phonebook_data = phonebook_data.filter((person) => person.id !== person_id)
+    res.status(204).end()
 })
 
 app.listen(PORT, () => {
