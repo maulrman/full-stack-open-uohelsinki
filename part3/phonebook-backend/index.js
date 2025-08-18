@@ -30,9 +30,9 @@ let phonebook_data = [
     }
 ]
 
-app.get('/api/persons', (req, res) => {
-    res.json(phonebook_data)
-})
+function is_in_phonebook(name){
+    return phonebook_data.find((person) => person.name === name)
+}
 
 app.get('/info', (req, res) => {
     const now = new Date(Date.now())
@@ -40,6 +40,27 @@ app.get('/info', (req, res) => {
         `<p>Phonebook has info for ${phonebook_data.length}</p>
         <p>${now.toString()}</p>`
     )
+})
+
+app.get('/api/persons', (req, res) => {
+    res.json(phonebook_data)
+})
+
+app.post('/api/persons',(req, res) => {
+    // console.log(req.body)
+    let contact = req.body
+    if (Object.hasOwn(contact, "name") 
+        && Object.hasOwn(contact, "number")
+        && contact['name'].length > 0
+        && contact['number'].length > 0
+        && !(is_in_phonebook(contact['name']))){
+            contact = {...contact, "id": crypto.randomUUID()}
+            phonebook_data.push(contact)
+            // console.log(phonebook_data)
+            res.json({...contact, 'status': 'Added'})
+    } else {
+        res.status(400).json({'status': 'error'})
+    }
 })
 
 app.get('/api/persons/:id', (req, res) => {
