@@ -110,6 +110,14 @@ app.get('/api/persons/:id', (req, res, next) => {
     }
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+    // console.log(req.body)
+    Person.findByIdAndUpdate(req.params.id, { number: req.body.number }, { new: true})
+        .then(person => res.status(200).json(person))
+    // console.log(person)
+    // res.json({ok : 'ok'})
+})
+
 app.delete('/api/persons/:id', (req, res) => {
     const person_id = req.params.id
     Person

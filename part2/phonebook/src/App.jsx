@@ -64,35 +64,41 @@ const App = () => {
   const [notification, setNotification] = useState({})
   const [refreshKey, setRefreshKey] = useState(0)
 
-  const updateContact = (person) => {
+  const updateContact = (person, index) => {
     phoneService
-      .update(person.id, person)
-      .then(()=> true)
+      .update(person._id, person)
+      .then(res => {
+        let updatedPersons = [...persons]
+        updatedPersons[index] = res.data
+        setPersons(updatedPersons)
+      })
       .catch(e => {
+        // console.log(e)
         setNotification({ type: "error", value: `Information of ${person.name} has already been removed from server`})
         setTimeout(()=>{
           setNotification(null)
         }, 5000)
-        return false
       })
   }
 
   const addContact = (event) => {
     event.preventDefault()
-    const personExist = persons.findIndex((person) => person.name === newName)
-    if ( personExist >= 0){
+    const personExistIndex = persons.findIndex((person) => person.name === newName)
+    if ( personExistIndex >= 0){
       let confirm=window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
       if (confirm){
-        let updatePersonObject = {...persons[personExist]}
+        let updatePersonObject = {...persons[personExistIndex]}
         updatePersonObject.number = newNumber
-        let succeed = updateContact(updatePersonObject)
-        if (succeed){
-          let updatedPersons = [...persons]
-          updatedPersons[personExist] = updatePersonObject
-          setPersons(updatedPersons)
-        } else {
-          setRefreshKey(refreshKey + 1)
-        }
+        updateContact(updatePersonObject, personExistIndex)
+        // updatePersonObject.number = newNumber
+        // let succeed = updateContact(persons[personExistIndex])
+        // if (succeed){
+        //   let updatedPersons = [...persons]
+        //   updatedPersons[personExist] = updatePersonObject
+        //   setPersons(updatedPersons)
+        // } else {
+        //   setRefreshKey(refreshKey + 1)
+        // }
       }
       setNewName('')
       setNewNumber('')
