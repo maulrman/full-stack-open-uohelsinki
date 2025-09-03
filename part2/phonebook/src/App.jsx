@@ -33,7 +33,7 @@ const Persons = ({ persons, onDelete }) => {
       {
         persons.map((person) => {
           return (
-            <div key={person.id}>
+            <div key={person._id}>
               <p>{person.name} {person.number} <button onClick={onDelete(person)}>delete</button></p>
             </div>
           )
@@ -107,6 +107,7 @@ const App = () => {
     phoneService
       .create(newPersonObj)
       .then(resp => {
+        // console.log(resp)
         setPersons(persons.concat(resp.data))
       })
 
@@ -125,8 +126,12 @@ const App = () => {
       let confirm = window.confirm(`Delete ${person.name}`)
       if (confirm){
         phoneService
-          .remove(person.id)
-          .then(setPersons(persons.filter(contact => contact.id !== person.id)))
+          .remove(person._id)
+          .then(res => {
+            if (res.data){
+              setPersons(persons.filter(contact => contact._id !== res.data._id))
+            }
+          })
       }
     }
     return deleteContact

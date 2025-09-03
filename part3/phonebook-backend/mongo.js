@@ -7,6 +7,8 @@ const mongo_url = `mongodb+srv://${mongo_user}:${mongo_pass}@${mongo_cluster_uri
 
 mongoose.set('strictQuery', false)
 mongoose.connect(mongo_url)
+    .then(res => console.log('connected to db'))
+    .catch(error => console.log('error: ', error.message))
 
 const personSchema = new mongoose.Schema({
     name: String,
@@ -15,6 +17,7 @@ const personSchema = new mongoose.Schema({
 
 const Person = mongoose.model('Person', personSchema)
 
+// For part 3.12
 if (process.argv.length <= 2){
     Person
         .find({})
