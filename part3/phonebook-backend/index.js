@@ -95,7 +95,7 @@ app.post('/api/persons',(req, res, next) => {
                     })
             } // TODO: add redirect to update if is in phonebook already
     } else {
-        next(error)
+        res.status(400).json({ error: 'bad request'})
     }
 })
 
@@ -109,6 +109,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 app.put('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndUpdate(req.params.id, { number: req.body.number }, { new: true})
         .then(person => res.status(200).json(person))
+        .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -124,7 +125,7 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
 
-const errorHandler = (error, req, res, next) => {
+const errorHandler = (error, req, res) => {
     console.error(error.message)
 
     if (error.name === 'CastError') {
@@ -132,8 +133,6 @@ const errorHandler = (error, req, res, next) => {
     } else {
         return res.status(400).send({ error: 'bad request.'})
     }
-
-    next(error)
 }
 
 app.use(errorHandler)
