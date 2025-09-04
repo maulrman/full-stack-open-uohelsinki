@@ -54,10 +54,12 @@ function is_in_phonebook(name){
 
 app.get('/info', (req, res) => {
     const now = new Date(Date.now())
-    res.send(
-        `<p>Phonebook has info for ${phonebook_data.length}</p>
-        <p>${now.toString()}</p>`
-    )
+    Person.countDocuments({})
+        .then(result => {
+            res.send(
+                `<p>Phonebook has info for ${result}</p><p>${now.toString()}</p>`
+            )
+        })
 })
 
 app.get('/api/persons', (req, res, next) => {
@@ -68,13 +70,10 @@ app.get('/api/persons', (req, res, next) => {
     })
     .catch(error=>{
         next(error)
-        // console.log(error.message)
-        // res.status(400).send()
     })
 })
 
 app.post('/api/persons',(req, res, next) => {
-    let saved
     let contact = req.body
     if (Object.hasOwn(contact, "name")
         && Object.hasOwn(contact, "number")
@@ -102,20 +101,14 @@ app.post('/api/persons',(req, res, next) => {
 
 app.get('/api/persons/:id', (req, res, next) => {
     const person_id = req.params.id
-    const person = phonebook_data.find((person) => person.id === person_id)
-    if(person){
-        res.json(person)
-    } else {
-        res.status(404).json({'message': "404"})
-    }
+    Person.findById(person_id)
+        .then(result => res.json(result))
+        .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
-    // console.log(req.body)
     Person.findByIdAndUpdate(req.params.id, { number: req.body.number }, { new: true})
         .then(person => res.status(200).json(person))
-    // console.log(person)
-    // res.json({ok : 'ok'})
 })
 
 app.delete('/api/persons/:id', (req, res) => {
